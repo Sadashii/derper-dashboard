@@ -1,0 +1,22 @@
+# derper's own counters (/debug/varz, answered only on loopback and Tailscale addresses) and the host's NIC/CPU.
+# install.sh fills in @DERPER@ and @DERPER_SCHEME@.
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: derper
+    scheme: @DERPER_SCHEME@
+    metrics_path: /debug/varz
+    tls_config:
+      insecure_skip_verify: true   # a loopback scrape: derper's certificate names its public hostname
+    static_configs:
+      - targets: ["@DERPER@"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["127.0.0.1:9100"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["127.0.0.1:9090"]
